@@ -1,0 +1,24 @@
+const path = require('path');
+
+
+module.exports = {
+  entry: path.join(__dirname, '/client/src/App.jsx'),
+
+  output: {
+    path: path.join(__dirname, '/client/dist/js'),
+    filename: 'App.js',
+  },
+
+  module: {
+    loaders: [{
+      test: /\.jsx?$/,
+      include: path.join(__dirname, '/client/src'),
+      loader: 'babel-loader',
+      query: {
+        presets: ["react", "es2015"]
+      }
+    }],
+  },
+
+  watch: true
+};
