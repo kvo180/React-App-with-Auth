@@ -1,15 +1,13 @@
 const express = require('express');
-const validator = require('validator');
+const validator = require('validator'); // an npm module that can detect whether an email
+// address is in its correct form
 
 const router = new express.Router();
 
-/**
- * Validate the sign up form
- *
- * @param {object} payload - the HTTP body message
- * @returns {object} The result of validation. Object contains a boolean validation result,
- *                   errors tips, and a global message for the whole form.
- */
+// validates the signup form. The 'payload' parameter is given by the data passed in by the post
+// request
+// returns an object that contains success (bool), message (string), and errors (object that
+// contains error strings, which are displayed on the form)
 function validateSignupForm(payload) {
   const errors = {};
   let isFormValid = true;
@@ -41,13 +39,7 @@ function validateSignupForm(payload) {
   };
 }
 
-/**
- * Validate the login form
- *
- * @param {object} payload - the HTTP body message
- * @returns {object} The result of validation. Object contains a boolean validation result,
- *                   errors tips, and a global message for the whole form.
- */
+// same as signup form
 function validateLoginForm(payload) {
   const errors = {};
   let isFormValid = true;

@@ -21,6 +21,7 @@ class LoginPage extends React.Component {
     this.changeUser = this.changeUser.bind(this);
   }
 
+  // onChange handler method
   changeUser(event) {
     const field = event.target.name;
     const user = this.state.user;
@@ -31,8 +32,9 @@ class LoginPage extends React.Component {
     });
   }
 
+  // onSubmit handle method
   processForm(event) {
-    event.preventDefault();
+    event.preventDefault(); // prevents form component from default action (opens a new window)
 
     const name = this.state.user.name;
     const email = this.state.user.email;
