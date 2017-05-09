@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
+import Auth from '../modules/Auth';
 import LoginForm from '../components/LoginForm.jsx';
 
 
@@ -9,16 +11,32 @@ class LoginPage extends React.Component {
   constructor(props) {
     super(props);
 
+    const storedMessage = localStorage.getItem('successMessage');
+    let successMessage = '';
+
+    if (storedMessage) {
+      successMessage = storedMessage;
+      localStorage.removeItem('successMessage');
+    }
+
     this.state = {
       errors: {},
+      successMessage: successMessage,
       user: {
         email: '',
         password: ''
-      }
+      },
+      loggedIn: false
     };
 
     this.processForm = this.processForm.bind(this);
     this.changeUser = this.changeUser.bind(this);
+  }
+
+  componentWillMount() {
+    if (Auth.isUserAuthenticated()) {
+      Auth.deauthenticateUser();
+    }
   }
 
   // onChange handler method
@@ -28,7 +46,7 @@ class LoginPage extends React.Component {
     user[field] = event.target.value;
 
     this.setState({
-      user
+      user: user
     });
   }
 
@@ -48,11 +66,20 @@ class LoginPage extends React.Component {
     })
     .then((response) => {
 
+      console.log('The form is valid');
+
+      //save the token
+      Auth.authenticateUser(response.data.token);
+
       context.setState({
-        errors: {}
+        errors: {},
+        loggedIn: true
       });
 
-      console.log('The form is valid');
+      console.log('logged in:', Auth.isUserAuthenticated());
+      console.log(context);
+      // context.props.history.push('/');
+      // console.log(response.data);
     })
     .catch((err) => {
       var errors = err.response.data.errors ? err.response.data.errors : {};
@@ -66,14 +93,22 @@ class LoginPage extends React.Component {
 
   render() {
     return (
-      <LoginForm
-        onSubmit={this.processForm}
-        onChange={this.changeUser}
-        errors={this.state.errors}
-        user={this.state.user}
-      />
+      <div>
+        <LoginForm
+          onSubmit={this.processForm}
+          onChange={this.changeUser}
+          errors={this.state.errors}
+          successMessage={this.state.successMessage}
+          user={this.state.user}
+        />
+        {this.state.loggedIn && <Redirect push to="/"/>}
+      </div>
     );
   }
 }
+
+LoginPage.contextTypes = {
+  router: PropTypes.object.isRequired
+};
 
 export default LoginPage;

@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import SignUpForm from '../components/SignUpForm.jsx';
+import { Redirect } from 'react-router-dom';
 
 
 class SignUpPage extends React.Component {
@@ -15,7 +16,8 @@ class SignUpPage extends React.Component {
         email: '',
         name: '',
         password: ''
-      }
+      },
+      redirect: false
     };
 
     this.processForm = this.processForm.bind(this);
@@ -29,7 +31,7 @@ class SignUpPage extends React.Component {
     user[field] = event.target.value;
 
     this.setState({
-      user
+      user: user
     });
   }
 
@@ -50,11 +52,13 @@ class SignUpPage extends React.Component {
     })
     .then((response) => {
 
-      context.setState({
-        errors: {}
-      });
-
       console.log('The form is valid');
+      localStorage.setItem('successMessage', response.data.message);
+
+      context.setState({
+        errors: {},
+        redirect: true
+      });
     })
     .catch((err) => {
       var errors = err.response.data.errors ? err.response.data.errors : {};
@@ -68,15 +72,21 @@ class SignUpPage extends React.Component {
 
   render() {
     return (
-      <SignUpForm
-        onSubmit={this.processForm}
-        onChange={this.changeUser}
-        errors={this.state.errors}
-        user={this.state.user}
-      />
+      <div>
+        <SignUpForm
+          onSubmit={this.processForm}
+          onChange={this.changeUser}
+          errors={this.state.errors}
+          user={this.state.user}
+        />
+        {this.state.redirect && <Redirect to="/login"/>}
+      </div>
     );
   }
-
 }
+
+SignUpPage.contextTypes = {
+  router: PropTypes.object.isRequired
+};
 
 export default SignUpPage;
