@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import SignUpForm from '../components/SignUpForm.jsx';
 
@@ -34,9 +35,33 @@ class SignUpPage extends React.Component {
   processForm(event) {
     event.preventDefault();
 
-    console.log('name:', this.state.user.name);
-    console.log('email:', this.state.user.email);
-    console.log('password:', this.state.user.password);
+    const name = this.state.user.name;
+    const email = this.state.user.email;
+    const password = this.state.user.password;
+
+    var context = this;
+
+    axios.post('/auth/signup', {
+      name: name,
+      email: email,
+      password: password
+    })
+    .then((response) => {
+
+      context.setState({
+        errors: {}
+      });
+
+      console.log('The form is valid');
+    })
+    .catch((err) => {
+      var errors = err.response.data.errors ? err.response.data.errors : {};
+      errors.summary = err.response.data.message;
+
+      context.setState({
+        errors: errors
+      });
+    });
   }
 
   render() {
